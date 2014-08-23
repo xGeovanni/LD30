@@ -238,23 +238,25 @@ function Grid(topleft, size, tileSize, canvas, defaultTile, intToTileRender){
 				var y = this.topleft[1] + j * this.tileSize[1];
 				
 				var render = this.intToTileRender[type];
-				
-				if (typeof render === "string"){
-					ctx.fillStyle = render;	
-					ctx.fillRect(x, y, this.tileSize[0] + 1, this.tileSize[1] + 1);
-				}
-				else if (this.animationImported){
-					if (render instanceof Animator || render instanceof Animation){
-						render.draw(ctx, [x, y]);
-					}
-					else{
-						ctx.drawImage(render, x, y);
-					}
-				}
-				else{
-					ctx.drawImage(render, x, y);
-				}
+
+				this._fillTile(ctx, x, y, render);
 			}
+		}
+	};
+
+	this._fillTile = function(ctx, x, y, render){
+		if (typeof render === "string"){
+			ctx.fillStyle = render;	
+			ctx.fillRect(x, y, this.tileSize[0] + 1, this.tileSize[1] + 1);
+		}
+		else if (this.animationImported && (render instanceof Animator || render instanceof Animation)){
+			render.draw(ctx, [x, y]);
+		}
+		else if (render instanceof Array){
+			return this._fillTile(ctx, x, y, Random.choice(render));
+		}
+		else{
+			ctx.drawImage(render, x, y);
 		}
 	};
 }

@@ -1,0 +1,6 @@
+Grid based platformer. Every x seconds / checkpoint you switch worlds.
+
+There is a platforming world and a combat world? Platforming world is bright, sy=unny and happy. Combat world is dark and creepy like Terraria corruption.
+Screen transition is like Pokemon Gen III poison damage. Screen goes all pixely.
+
+Dr. Jekyll & Mr. Hyde. Dr. Jekyll and Kyle Hyde.
