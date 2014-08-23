@@ -24,6 +24,10 @@ var Game = {
 	corruptWorldRender : null,
 
 	tileset : null,
+
+	worldOffset : new Vector2(0, 0),
+
+	player : null;`
 	
 	intro : function(){
 		
@@ -39,6 +43,9 @@ var Game = {
 
 		this.normalWorld = new World(this.tileset, this.normalWorldRender);
 		this.corruptWorld = new World(this.tileset, this.corruptWorldRender);
+
+		this.normalWorld.buildAsNormalWorld();
+		this.corruptWorld.buildAsCorruptWorld();
 
 		this.normalWorldRender.width = this.normalWorld.size.x * this.normalWorld.tileSize.x;
 		this.normalWorldRender.height = this.normalWorld.size.y * this.normalWorld.tileSize.y;
@@ -57,6 +64,9 @@ var Game = {
 		this.switchToNormalWorld();
 
 		this.timeUntilSwitchWorld = this.timeBetweenSwitchWorld;
+
+
+		this.player = new Player(this);
 	},
 	
 	update : function(){
@@ -75,6 +85,12 @@ var Game = {
 			this.switchWorld();
 			this.timeUntilSwitchWorld = this.timeBetweenSwitchWorld;
 		}
+
+		if (Key.isDown(Key.RIGHT)){
+			this.worldOffset.x -= 150 * deltaTime;
+		}
+
+		PhysicsManager.update(deltaTime);
 	},
 	
 	render : function(){
@@ -85,10 +101,10 @@ var Game = {
 		}
 
 		if (this.currentWorld === this.normalWorld){
-			ctx.drawImage(this.normalWorldRender, 0, 0);
+			ctx.drawImage(this.normalWorldRender, this.worldOffset.x, this.worldOffset.y);
 		}
 		else if (this.currentWorld === this.corruptWorld){
-			ctx.drawImage(this.corruptWorldRender, 0, 0);
+			ctx.drawImage(this.corruptWorldRender, this.worldOffset.x, this.worldOffset.y);
 		}
 	},
 

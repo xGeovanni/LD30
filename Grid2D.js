@@ -46,6 +46,7 @@ function Grid(topleft, size, tileSize, canvas, defaultTile, intToTileRender){
 		 * left : 0010
 		 * down : 0001
 		 */
+
 		var sTileOfType = "";
 		var tile = [];
 		
@@ -83,12 +84,24 @@ function Grid(topleft, size, tileSize, canvas, defaultTile, intToTileRender){
 					sTileOfType += "0";
 				}
 				
-				if (sTileOfType in surroundingToNewTile){
-					this.tileTypes[i][j] = surroundingToNewTile[sTileOfType];
+				for (var s in surroundingToNewTile){
+					if (typeof s === "string" && this.sTileOfTypeEqual(s, sTileOfType)){
+						this.tileTypes[i][j] = surroundingToNewTile[s];
+					}
 				}
 			}
 		}
-	}
+	};
+
+	this.sTileOfTypeEqual = function(a, b){
+		for (var i=a.length-1; i >= 0; i--){
+			if (!(a[i] === "*" || b[i] === "*" || a[i] === b[i])){
+				return false;
+			}
+		}
+
+		return true;
+	};
 	
 	this.move = function(x, y){
 		if (x === 0 && y === 0){
