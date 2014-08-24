@@ -21,13 +21,12 @@ var PhysicsManager = {
 
 	update : function(deltaTime){
 		for (var i=this.physicsObjects.length-1; i >= 0; i--){
-
 			this.physicsObjects[i].physicsUpdate(deltaTime);
 			this.physicsObjects[i].uniquePhysicsUpdate(deltaTime);
 		}
 	},
 
-	rectCollides : function(rect){
+	rectCollides : function(rect, owner){
 		var tiles = this.game.currentWorld.tilesOverlapRect(rect);
 
 		for (var i=tiles.length-1; i >= 0; i--){
@@ -37,7 +36,25 @@ var PhysicsManager = {
 			}
 		}
 
+		if (owner instanceof Bullet){
+			return false;
+		}
+
+		for (var i = this.physicsObjects.length-1; i >= 0; i--){
+			if (this.physicsObjects[i].dead || this.physicsObjects[i] == owner || this.physicsObjects[i] instanceof Bullet || ! this.physicsObjects[i].solid){
+				continue;
+			}
+
+			if (rect.collideRect(this.physicsObjects[i].collider)){
+				return true;
+			}
+		}
+
 		return false;
+	},
+
+	dropAllButPlayer : function(){
+		this.physicsObjects = this.physicsObjects.slice(0, 1);
 	},
 };
 
@@ -49,7 +66,11 @@ function PhysicsObject(pos, collider){
 
 	this.collider = collider;
 
+	this.solid = true;
+
 	this.dead = false;
+
+	this.grounded = false;
 
 	this.physicsUpdate = function(deltaTime){
 		if (this.dead){
@@ -68,12 +89,14 @@ function PhysicsObject(pos, collider){
 		}
 		if (canMove[1]){
 			this.pos[1] += this.velocity[1] * deltaTime * canMove[1];
+			this.grounded = false;
+
 		}
 		else{
 			this.collideY();
 		}
 
-		while (PhysicsManager.rectCollides(this.collider)){
+		while (PhysicsManager.rectCollides(this.collider, this)){ 
 			this.pos.y -= PhysicsManager.game.currentWorld.tileSize.y;
 			this.collider.pos = this.pos;
 		}
@@ -86,7 +109,7 @@ function PhysicsObject(pos, collider){
 	};
 
 	this.checkMove = function(){
-		var canMove = [false, false];
+		var canMove = [true, true];
 
 		var testX = this.collider.copy();
 		var testY = this.collider.copy();
@@ -94,8 +117,8 @@ function PhysicsObject(pos, collider){
 		testX.pos.x += this.velocity[0] * deltaTime;
 		testY.pos.y += this.velocity[1] * deltaTime;
 
-		canMove[0] = ! PhysicsManager.rectCollides(testX);
-		canMove[1] = ! PhysicsManager.rectCollides(testY);
+		canMove[0] = ! PhysicsManager.rectCollides(testX, this);
+		canMove[1] = ! PhysicsManager.rectCollides(testY, this);
 
 		return canMove;
 	}
@@ -106,6 +129,7 @@ function PhysicsObject(pos, collider){
 	}
 	this.collideY = function(){
 		this.velocity[1] = 0;
+		this.grounded = true;
 		this.onCollisionY();
 	}
 

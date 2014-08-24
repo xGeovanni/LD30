@@ -10,3 +10,26 @@ Player related to Rick. Insane? Bandaged Eye like Polly.
 Derrick McSick
 
 Normal world is pure platforming / parkour. Every time you fall you enter the corrupt world and must fight to get back to the surface.
+
+Enemy Ideas:
+	Normal world:
+
+	Corrupt world:
+		Bat
+		Slime (3 stages. One really big, when killed spawns two medium, each spawn two small. Can spawn as big or medium.)
+		Zombie
+
+	Normal world:
+		Rabbit (Does not jump or fight.)
+		Bowyer
+		? Military stuff (Tank, helicoptor, etc.)
+
+	Boss ? (Same as Rick?)
+
+Win condition or just arcade?
+
+Spawn probability table.
+
+TODO:
+	Grass - Gound transition tiles.
+	Enemies.

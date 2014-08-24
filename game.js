@@ -8,13 +8,10 @@ canvas.oncontextmenu = function(e){ e.preventDefault(); return false; };
 
 var Game = {
 	
-	started : true,
+	started : false,
 
 	normalBG : "#00A0FF",
 	corruptBG : "#553377",
-
-	timeBetweenSwitchWorld : 10,
-	timeUntilSwitchWorld : 0,
 
 	currentWorld : null,
 	normalWorld : null,
@@ -33,12 +30,31 @@ var Game = {
 	player : null,
 
 	gameObjects : [],
+
+	nSpawnsOnWorldSwitch : 80,
+
+	normalEnemySpawnProbabilityTable : { //Great variable names, huh?
+		"Rabbit" : 1,
+	},
+
+	corruptEnemySpawnProbabilityTable : {
+		"Bat" : 1,
+	},
+
+	enemyStringToClass : {
+		"Rabbit" : Rabbit,
+		"Bat" : Bat,
+	},
 	
 	intro : function(){
-		
+		ctx.drawImage(title, 0, 0);
 	},
 	
 	init : function(){
+		if (window.innerWidth < canvas.width && this.windowIsMaximized()){
+			canvas.width = document.innerWidth;
+		}
+
 		this.intro();
 
 		this.tileset = new Tileset(tileset, [8, 32], [16, 16], 1);
@@ -53,6 +69,8 @@ var Game = {
 		AnimationThread.start();
 
 		this.player = new Player(this, new Tileset(Derrick, [8, 4], [30, 60], 1), new Tileset(arms, [2, 1], [46, 15], 1));
+
+		this.spawnInitialEnemies();
 
 		ctx.font = "12px Verdana";
 	},
@@ -120,6 +138,34 @@ var Game = {
 		}
 	},
 
+	spawnEnemy : function(){
+		var table = this.currentWorld === this.normalWorld ? this.normalEnemySpawnProbabilityTable : this.corruptEnemySpawnProbabilityTable;
+
+		var seed = Math.random();
+		var cumulative = 0;
+
+		var pos = new Vector2(Random.range(this.worldOffset.x, this.worldOffset.x + this.currentWorld.size.x), canvas.height / 2);
+
+		while(pos.x > 0 && pos.x < canvas.width){
+			//No spawning enemies on-screen.
+			pos.x += Random.range(this.worldOffset.x, this.worldOffset.x + this.currentWorld.size.x);
+		}
+
+		for (var enemy in table){
+			cumulative += table[enemy];
+
+			if (seed < cumulative){
+				new this.enemyStringToClass[enemy](pos);
+			}
+		}
+	},
+
+	spawnInitialEnemies : function(){
+		for(var i = this.nSpawnsOnWorldSwitch; i > 0; i--){
+			this.spawnEnemy();
+		}
+	},
+
 	showBookends : function(){
 		if (this.worldOffset.x > 0){
 			var bookend = this.currentWorld === this.normalWorld ? this.normalWorldBookends[1] : this.corruptWorldBookends[1];
@@ -134,6 +180,7 @@ var Game = {
 
 	switchWorld : function(){
 		this.gameObjects = this.gameObjects.slice(0, 1);
+		PhysicsManager.dropAllButPlayer();
 
 		if (this.currentWorld === this.normalWorld){
 			this.switchToCorruptWorld();
@@ -141,6 +188,8 @@ var Game = {
 		else if (this.currentWorld === this.corruptWorld){
 			this.switchToNormalWorld();
 		}
+
+		this.spawnInitialEnemies();
 	},
 
 	switchToNormalWorld : function(){
@@ -182,7 +231,11 @@ var Game = {
 
 		this.corruptWorldBookends[0] = subCanvas(this.corruptWorldRender, 0, 0, canvas.width / 2, canvas.height);
 		this.corruptWorldBookends[1] = subCanvas(this.corruptWorldRender, this.corruptWorld.size.x - canvas.width / 2, 0, canvas.width / 2, canvas.height);
-	}
+	},
+
+	windowIsMaximized : function(){
+		return screen.availWidth == window.innerWidth;
+	},
 }
 
 function init(){

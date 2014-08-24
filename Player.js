@@ -14,12 +14,10 @@ function Player(game, spritesheet, arms){
 
 	Rect.call(this, pos, [30, 60]);
 	PhysicsObject.call(this, pos, this);
+	HasHealth.call(this, 200);
 
 	this.speed = 170;
 	this.jumpVel = -200;
-
-	this.collideYThisFrame = false;
-	this.grounded = false;
 
 	var walkRight = new Animation([spritesheet[0][0], spritesheet[1][0], spritesheet[2][0], spritesheet[3][0]], 10, false);
 	var walkLeft = new Animation([spritesheet[0][1], spritesheet[1][1], spritesheet[2][1], spritesheet[3][1]], 10, false);
@@ -110,7 +108,7 @@ function Player(game, spritesheet, arms){
 
 		var pos = this.pos.copy().add(this.armPoint);
 
-		new Bullet(pos, pos.angleTo(mousePos));
+		new Bullet(pos, pos.angleTo(mousePos), this);
 	};
 
 	this.jump = function(){
@@ -119,11 +117,6 @@ function Player(game, spritesheet, arms){
 		}
 
 		this.velocity.y += this.jumpVel;
-	};
-
-	this.uniquePhysicsUpdate = function(deltaTime){
-		this.grounded = this.collideYThisFrame;
-		this.collideYThisFrame = false;
 	};
 
 	this.physicsUpdate = function(deltaTime){
@@ -144,12 +137,13 @@ function Player(game, spritesheet, arms){
 		}
 		if (canMove[1]){
 			this.pos[1] += this.velocity[1] * deltaTime * canMove[1];
+			this.grounded = false;
 		}
 		else{
 			this.collideY();
 		}
 
-		while (PhysicsManager.rectCollides(this.collider)){
+		while (PhysicsManager.rectCollides(this.collider, this)){
 			this.pos.y -= PhysicsManager.game.currentWorld.tileSize.y;
 			this.collider.pos = this.pos;
 		}
