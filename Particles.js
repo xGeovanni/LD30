@@ -100,14 +100,14 @@ function Bullet(pos, direction, owner){
 	}
 }
 
-function Blood(pos){
+function Blood(pos, speed){
 	Particle.call(this, pos, null, Random.range(2, 5), "#8A0707");
 	PhysicsObject.call(this, pos, this.toRect());
 	this.solid = false;
 
 	this.pos = this.centre;
 
-	var speed = 160;
+	var speed = speed !== undefined ? speed : 160;
 
 	this.velocity = new Vector2(Math.random() * Random.choice([1, -1]) * speed, -1 * Random.range(speed / 2, speed));
 

@@ -32,12 +32,12 @@ var PhysicsManager = {
 		for (var i=tiles.length-1; i >= 0; i--){
 			var index = this.collidingTiles.indexOf(this.game.currentWorld.getTileType(tiles[i]));
 			if (index !== -1){
-				return true;
+				return tiles[i];
 			}
 		}
 
 		if (owner instanceof Bullet){
-			return false;
+			return null;
 		}
 
 		for (var i = this.physicsObjects.length-1; i >= 0; i--){
@@ -46,11 +46,11 @@ var PhysicsManager = {
 			}
 
 			if (rect.collideRect(this.physicsObjects[i].collider)){
-				return true;
+				return this.physicsObjects[i];
 			}
 		}
 
-		return false;
+		return null;
 	},
 
 	dropAllButPlayer : function(){
@@ -71,6 +71,8 @@ function PhysicsObject(pos, collider){
 	this.dead = false;
 
 	this.grounded = false;
+
+	this.hit = [];
 
 	this.physicsUpdate = function(deltaTime){
 		if (this.dead){
@@ -117,8 +119,11 @@ function PhysicsObject(pos, collider){
 		testX.pos.x += this.velocity[0] * deltaTime;
 		testY.pos.y += this.velocity[1] * deltaTime;
 
-		canMove[0] = ! PhysicsManager.rectCollides(testX, this);
-		canMove[1] = ! PhysicsManager.rectCollides(testY, this);
+		this.hit[0] = PhysicsManager.rectCollides(testX, this);
+		this.hit[1] = PhysicsManager.rectCollides(testY, this);
+
+		canMove[0] = this.hit[0] === null;
+		canMove[1] = this.hit[1] === null;
 
 		return canMove;
 	}

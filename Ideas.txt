@@ -24,7 +24,7 @@ Enemy Ideas:
 		Bowyer
 		? Military stuff (Tank, helicoptor, etc.)
 
-	Boss ? (Same as Rick?)
+	Boss ? (Same as Rick?) The Eye.
 
 Win condition or just arcade?
 

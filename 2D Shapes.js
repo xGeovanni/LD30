@@ -44,11 +44,11 @@ function Rect(pos, size, colour){
 	
 	this.draw = function(ctx, width, colour){
 		if (! width){
-			ctx.fillStyle = colour ? colour : this.colour;
+			ctx.fillStyle = colour !== undefined ? colour : this.colour;
 			ctx.fillRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 		}
 		else{
-			ctx.strokeStyle = colour ? colour : this.colour;
+			ctx.strokeStyle = colour !== undefined ? colour : this.colour;
 			ctx.lineWidth = width;
 			ctx.strokeRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 		}

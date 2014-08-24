@@ -31,19 +31,30 @@ var Game = {
 
 	gameObjects : [],
 
-	nSpawnsOnWorldSwitch : 80,
+	nSpawnsOnWorldSwitch : 20,
+
+	timeBetweenSpawnEnemy : 2,
+	timeUntilSpawnEnemy : null,
 
 	normalEnemySpawnProbabilityTable : { //Great variable names, huh?
 		"Rabbit" : 1,
 	},
 
 	corruptEnemySpawnProbabilityTable : {
-		"Bat" : 1,
+		"Bat" : .45,
+		"Zombie" : 0.25,
+		"Gen2Slime" : .15,
+		"Slime" : 0.12,
+		"Eye" : 0.03,
 	},
 
 	enemyStringToClass : {
 		"Rabbit" : Rabbit,
 		"Bat" : Bat,
+		"Slime" : Slime,
+		"Gen2Slime" : Gen2Slime,
+		"Zombie" : Zombie,
+		"Eye" : Eye,
 	},
 	
 	intro : function(){
@@ -71,6 +82,7 @@ var Game = {
 		this.player = new Player(this, new Tileset(Derrick, [8, 4], [30, 60], 1), new Tileset(arms, [2, 1], [46, 15], 1));
 
 		this.spawnInitialEnemies();
+		this.timeUntilSpawnEnemy = this.timeBetweenSpawnEnemy;
 
 		ctx.font = "12px Verdana";
 	},
@@ -101,6 +113,13 @@ var Game = {
 		for (var i=this.gameObjects.length-1; i >= 0; i--){
 			this.gameObjects[i].update(deltaTime);
 		}
+
+		this.timeUntilSpawnEnemy -= deltaTime;
+
+		if (this.timeUntilSpawnEnemy <= 0 ){
+			this.spawnEnemy();
+			this.timeUntilSpawnEnemy = this.timeBetweenSpawnEnemy;
+		}
 	},
 	
 	render : function(){
@@ -123,7 +142,9 @@ var Game = {
 
 		this.showBookends();
 
-		ctx.fillText(Math.floor(1 / deltaTime), 0, 12); //FPS Display
+		this.player.drawHUD(ctx);
+
+		//ctx.fillText(Math.floor(1 / deltaTime), 100, 100); //FPS Display
 	},
 
 	scroll : function(delta){
@@ -156,6 +177,7 @@ var Game = {
 
 			if (seed < cumulative){
 				new this.enemyStringToClass[enemy](pos);
+				return;
 			}
 		}
 	},

@@ -14,7 +14,7 @@ function Player(game, spritesheet, arms){
 
 	Rect.call(this, pos, [30, 60]);
 	PhysicsObject.call(this, pos, this);
-	HasHealth.call(this, 200);
+	HasHealth.call(this, 100);
 
 	this.speed = 170;
 	this.jumpVel = -200;
@@ -36,9 +36,19 @@ function Player(game, spritesheet, arms){
 	this.timeBetweenShots = .16;
 	this.timeUntilShot = 0;
 
+	var healthBarSize = [canvas.width / 4, canvas.height / 10];
+	var healthBarPos = [0, 0];
+
+	this.redHealthBar = new Rect(healthBarPos, healthBarSize, "#FF0000");
+	this.greenHeathbar = new Rect(healthBarPos, healthBarSize, "#00FF00");
+
 	window.onmousedown = function(e){ Game.player.onClick(e); };
 
 	this.update = function(deltaTime){
+		if (this.dead){
+			return;
+		}
+
 		this.handleInput();
 
 		if (! this.lockX){
@@ -119,7 +129,23 @@ function Player(game, spritesheet, arms){
 		this.velocity.y += this.jumpVel;
 	};
 
+	this.die = function(){
+		this.dead = true;
+
+		var nBlood = 150;
+		for (; nBlood >= 0; nBlood--){
+			var pos = new Vector2(Random.range(this.pos.x, this.pos.x + this.size.x), Random.range(this.pos.y, this.pos.y + this.size.y));
+			new Blood(pos, 300);
+		}
+
+		window.setTimeout(function(){ location.reload(); }, 4000);
+	}
+
 	this.physicsUpdate = function(deltaTime){
+		if (this.dead){
+			return;
+		}
+
 		this.velocity.add(PhysicsManager.g.copy().mul(deltaTime));
 
 		var canMove = this.checkMove();
@@ -161,6 +187,10 @@ function Player(game, spritesheet, arms){
 	};
 
 	this.draw = function(ctx){
+		if (this.dead){
+			return;
+		}
+
 		this.drawArm();
 		this.animator.draw(ctx, this.pos);
 	};
@@ -172,5 +202,14 @@ function Player(game, spritesheet, arms){
 		var rotation = toRadians(pos.angleTo(mousePos)) * -1 + Math.PI / 2;
 
 		drawRotatedImage(arm, pos.copy().add(offset.copy().rotate(rotation)), rotation);
+	};
+
+	this.drawHUD = function(ctx){
+		this.redHealthBar.draw(ctx);
+
+		this.greenHeathbar.size.x = this.redHealthBar.size.x * this.healthAsRatio();
+		this.greenHeathbar.draw(ctx);
+
+		this.redHealthBar.draw(ctx, 2, "#000000");
 	}
 }
