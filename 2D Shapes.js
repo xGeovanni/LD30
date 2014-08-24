@@ -33,6 +33,10 @@ function Rect(pos, size, colour){
 		return (this.pos[0] < point[0] && point[0] < (this.pos[0] + this.size[0]) &&
 			     this.pos[1] < point[1] && point[1] < (this.pos[1] + this.size[1]));
 	};
+
+	this.containsRect = function(other){
+		return (this.pos.x < other.pos.x && this.pos.y < other.pos.y && (this.pos.x + this.size.x) > (other.pos.x + other.size.x) && (this.pos.y + this.size.y) > (other.pos.y + other.size.y));
+	};
 	
 	this.copy = function(){
 		return new Rect(this.pos, this.size);

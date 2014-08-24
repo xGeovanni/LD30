@@ -89,7 +89,7 @@ function Animation(images, rate, oscillate, enabled){
 }
 
 function Animator(states, animations){	
-	if (atates.length !== animations.length){
+	if (states.length !== animations.length){
 		throw "There must be as many animations as states.";
 	}
 	
