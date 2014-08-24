@@ -13,7 +13,7 @@ function fromRadians(rads){
 }
 
 function toRadians(vector){
-    return Math.atan2(-vector[0], vector[1]);
+    return Math.atan2(vector[0], vector[1]);
 }
     
 function fromDegrees(degs){

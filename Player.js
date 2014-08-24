@@ -4,7 +4,7 @@
  
 "use strict";
 
-function Player(game, spritesheet){
+function Player(game, spritesheet, arms){
 	this.game = game;
 	game.gameObjects.push(this);
 
@@ -29,6 +29,17 @@ function Player(game, spritesheet){
 
 	this.animator = new Animator(["walkRight", "walkLeft", "idleRight", "idleLeft"], [walkRight, walkLeft, idleRight, idleLeft]);
 
+	this.arms = arms;
+
+	this.leftArm = arms[1][0];
+	this.rightArm = arms[0][0];
+	this.armPoint = new Vector2(this.size[0] * (1/2), this.size[1] * (2/7))
+
+	this.timeBetweenShots = .16;
+	this.timeUntilShot = 0;
+
+	window.onmousedown = function(e){ Game.player.onClick(e); };
+
 	this.update = function(deltaTime){
 		this.handleInput();
 
@@ -39,39 +50,68 @@ function Player(game, spritesheet){
 			}
 		}
 
+		this.timeUntilShot -= deltaTime;
+
 		if (this.pos.y > canvas.height){
 			this.fallInToCorrupt();
+		}
+
+		if (mousePos.x >= this.pos.x){
+			if (this.velocity.x !== 0){
+				if (this.animator.state !== "walkRight"){
+					this.animator.setState("walkRight");
+				}
+			}
+
+			else if (this.animator.state !== "idleRight"){
+				this.animator.setState("idleRight");
+			}
+		}
+		else{
+			if (this.velocity.x !== 0){
+				if (this.animator.state !== "walkLeft"){
+					this.animator.setState("walkLeft");
+				}
+			}
+			else if (this.animator.state !== "idleLeft"){
+				this.animator.setState("idleLeft");
+			}
 		}
 	};
 
 	this.handleInput = function(){
 		if (Key.isDown(Key.A)){
 			this.velocity.x = -this.speed;
-			if (this.animator.state !== "walkLeft"){
-				this.animator.setState("walkLeft");
-			}
+			
 		}
 		else if (Key.isDown(Key.D)){
 			this.velocity.x = this.speed;
-			if (this.animator.state !== "walkRight"){
-				this.animator.setState("walkRight");
-			}
 		}
 		else{
 			this.velocity.x = 0;
-
-			if (this.animator.state === "walkRight"){
-				this.animator.setState("idleRight");
-			}
-			else if (this.animator.state === "walkLeft"){
-				this.animator.setState("idleLeft");
-			}
 		}
 
 		if (Key.isDown(Key.W)){
 			this.jump();
 		}
-	}
+	};
+
+	this.onClick = function(e){
+		if (e.button === 0){
+			this.fire();
+		}
+	};
+
+	this.fire = function(){
+		if (this.timeUntilShot > 0){
+			return;
+		}
+		this.timeUntilShot = this.timeBetweenShots;
+
+		var pos = this.pos.copy().add(this.armPoint);
+
+		new Bullet(pos, pos.angleTo(mousePos));
+	};
 
 	this.jump = function(){
 		if (! this.grounded){
@@ -79,12 +119,12 @@ function Player(game, spritesheet){
 		}
 
 		this.velocity.y += this.jumpVel;
-	}
+	};
 
 	this.uniquePhysicsUpdate = function(deltaTime){
 		this.grounded = this.collideYThisFrame;
 		this.collideYThisFrame = false;
-	}
+	};
 
 	this.physicsUpdate = function(deltaTime){
 		this.velocity.add(PhysicsManager.g.copy().mul(deltaTime));
@@ -109,6 +149,11 @@ function Player(game, spritesheet){
 			this.collideY();
 		}
 
+		while (PhysicsManager.rectCollides(this.collider)){
+			this.pos.y -= PhysicsManager.game.currentWorld.tileSize.y;
+			this.collider.pos = this.pos;
+		}
+		
 		this.collider.pos = this.pos;
 	};
 
@@ -122,6 +167,16 @@ function Player(game, spritesheet){
 	};
 
 	this.draw = function(ctx){
+		this.drawArm();
 		this.animator.draw(ctx, this.pos);
 	};
+
+	this.drawArm = function(ctx){
+		var pos = this.pos.copy().add(this.armPoint);
+		var arm = mousePos.x >= this.pos.x ? this.rightArm : this.leftArm;
+		var offset = mousePos.x >= this.pos.x ?  new Vector2(arm.width / 2 - 8, arm.height / 2) : new Vector2(arm.width / 2 - 8, arm.height / 2 * -1);
+		var rotation = toRadians(pos.angleTo(mousePos)) * -1 + Math.PI / 2;
+
+		drawRotatedImage(arm, pos.copy().add(offset.copy().rotate(rotation)), rotation);
+	}
 }

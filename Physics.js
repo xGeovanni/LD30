@@ -28,10 +28,6 @@ var PhysicsManager = {
 	},
 
 	rectCollides : function(rect){
-		if (rect.pos.y < this.game.currentWorld.pos.y){
-			return true;
-		}
-
 		var tiles = this.game.currentWorld.tilesOverlapRect(rect);
 
 		for (var i=tiles.length-1; i >= 0; i--){
@@ -53,7 +49,13 @@ function PhysicsObject(pos, collider){
 
 	this.collider = collider;
 
+	this.dead = false;
+
 	this.physicsUpdate = function(deltaTime){
+		if (this.dead){
+			return;
+		}
+
 		this.velocity.add(PhysicsManager.g.copy().mul(deltaTime));
 
 		var canMove = this.checkMove();
@@ -69,6 +71,11 @@ function PhysicsObject(pos, collider){
 		}
 		else{
 			this.collideY();
+		}
+
+		while (PhysicsManager.rectCollides(this.collider)){
+			this.pos.y -= PhysicsManager.game.currentWorld.tileSize.y;
+			this.collider.pos = this.pos;
 		}
 
 		this.collider.pos = this.pos;

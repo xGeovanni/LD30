@@ -11,7 +11,7 @@ var Game = {
 	started : true,
 
 	normalBG : "#00A0FF",
-	corruptBG : "#DF2020",
+	corruptBG : "#553377",
 
 	timeBetweenSwitchWorld : 10,
 	timeUntilSwitchWorld : 0,
@@ -52,7 +52,7 @@ var Game = {
 		PhysicsManager.start(this);
 		AnimationThread.start();
 
-		this.player = new Player(this, new Tileset(Derrick, [8, 4], [30, 60], 1));
+		this.player = new Player(this, new Tileset(Derrick, [8, 4], [30, 60], 1), new Tileset(arms, [2, 1], [46, 15], 1));
 
 		ctx.font = "12px Verdana";
 	},
@@ -67,20 +67,14 @@ var Game = {
 			return;
 		}
 
-		this.timeUntilSwitchWorld -= deltaTime;
-
-		if (this.timeUntilSwitchWorld <= 0){
-			//this.switchWorld();
-			this.timeUntilSwitchWorld = this.timeBetweenSwitchWorld;
-		}
 		this.currentWorld.topleft.x = this.worldOffset.x;
 		this.currentWorld.pos.x = this.worldOffset.x;
 
-		if (this.worldOffset.x > canvas.width / 2){
-			this.scroll(-this.currentWorld.size.x);
+		if (this.worldOffset.x >= canvas.width / 2){
+			this.scroll(-(this.currentWorld.size.x));
 		}
 
-		if (this.worldOffset.x < -1 * (this.currentWorld.size.x - canvas.width / 2)){
+		if (this.worldOffset.x <= -1 * (this.currentWorld.size.x - canvas.width / 2)){
 			this.scroll(this.currentWorld.size.x);
 		}
 
@@ -88,10 +82,6 @@ var Game = {
 		
 		for (var i=this.gameObjects.length-1; i >= 0; i--){
 			this.gameObjects[i].update(deltaTime);
-		}
-
-		if (Key.isDown(Key.ENTER)){
-			console.log(this.currentWorld.getTileType(this.currentWorld.pxToTileCoords(mousePos)));
 		}
 	},
 	
@@ -126,7 +116,7 @@ var Game = {
 				continue;
 			}
 
-			this.gameObjects[i].pos.x -= delta;
+			this.gameObjects[i].pos.x += delta;
 		}
 	},
 
@@ -143,6 +133,8 @@ var Game = {
 	},
 
 	switchWorld : function(){
+		this.gameObjects = this.gameObjects.slice(0, 1);
+
 		if (this.currentWorld === this.normalWorld){
 			this.switchToCorruptWorld();
 		}

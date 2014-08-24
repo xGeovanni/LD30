@@ -48,6 +48,13 @@ function Grid(topleft, gridSize, tileSize, canvas, defaultTile, intToTileRender)
 	this.setTileType = function(tile, type){
 		this.tileTypes[tile[0]][tile[1]] = type;
 	}
+
+	this.tileExists = function(tile){
+		if (tile[0] < 0 || tile[1] < 0) return false;
+		if (tile[0] >= this.gridSize[0] || tile[1] >= this.gridSize[1]) return false;
+
+		return true;
+	}
 	
 	this.tileContext = function(type, type2, surroundingToNewTile){
 		/*
@@ -208,9 +215,9 @@ function Grid(topleft, gridSize, tileSize, canvas, defaultTile, intToTileRender)
 	};
 
 	this.tilesOverlapRect = function(rect){
-		//Function currently only works on rects fully inside the grid. To fix after LD.
+		//Function currently only works on rects fully inside the grid. To fix right now, apparently.
 
-		if (! this.containsRect(rect)){
+		if (! this.collideRect(rect)){
 			return [];
 		}
 
@@ -221,7 +228,11 @@ function Grid(topleft, gridSize, tileSize, canvas, defaultTile, intToTileRender)
 
 		for (var i=startTile[0]; i <= endTile[0]; i++){
 			for(var j=startTile[1]; j <= endTile[1]; j++){
-				tiles.push([i, j]);
+				var tile = [i, j]; 
+
+				if (this.tileExists(tile)){
+					tiles.push(tile);
+				}
 			}
 		}
 

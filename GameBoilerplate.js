@@ -45,8 +45,6 @@ function drawRotatedImage(image, pos, angle){
 	// move to the middle of where we want to draw our image
 	ctx.translate(pos[0], pos[1]);
  
-	// rotate around that point, converting our 
-	// angle from degrees to radians 
 	ctx.rotate(angle);
  
 	// draw it up and to the left by half the width
