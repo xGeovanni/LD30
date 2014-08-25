@@ -10,7 +10,7 @@ var PhysicsManager = {
 
 	physicsObjects : [],
 
-	collidingTiles : [0, 1, 2, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 30, 31],
+	collidingTiles : [0, 1, 2, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 30, 31, 40],
 
 	g : new Vector2(0, 250),
 	epsilon : 0.01,

@@ -30,6 +30,8 @@ function World(tileset, render){
 
 		30 : [tileset[3][0], tileset[4][0], tileset[5][0]],
 		31 : [tileset[6][0], tileset[7][0], tileset[7][1]],
+
+		40 : [tileset[4][1], tileset[5][1], tileset[6][1]]
 	};
 
 	Grid.call(this, new Vector2(0, 0), new Vector2(300, 20), new Vector2(16, 16), render, -1, intToTileRender);
@@ -67,8 +69,12 @@ function World(tileset, render){
 			}
 		}
 
-		var grassSurroundingToNewTile = {
+		var grassSurroundingToNewTile0 = {
 			"***1" : 2,
+		};
+
+		var grassSurroundingToNewTile1 = {
+			"***1" : 40,
 		};
 
 		var groundSurroundingToNewTile = {
@@ -76,7 +82,8 @@ function World(tileset, render){
 			"*01*" : 31,
 		};
 
-		this.tileContext(1, 1, grassSurroundingToNewTile);
+		this.tileContext(1, 1, grassSurroundingToNewTile0);
+		this.tileContext(1, 0, grassSurroundingToNewTile1);
 		this.tileContext(0, -1, groundSurroundingToNewTile);
 	};
 

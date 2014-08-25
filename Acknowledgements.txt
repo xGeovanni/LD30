@@ -1,3 +1,4 @@
-Everything done by me alone, apart from the fonts used in the game, which were made by Tom 7.
-http://fonts.tom7.com/
+Everything here created by me to the extent demanded by the rules of the Ludum Dare Compo.
+
+Fonts: http://fonts.tom7.com/
 
