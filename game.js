@@ -79,6 +79,8 @@ var Game = {
 		PhysicsManager.start(this);
 		AnimationThread.start();
 
+		loadTileSets();
+
 		this.player = new Player(this, new Tileset(Derrick, [8, 4], [30, 60], 1), new Tileset(arms, [2, 1], [46, 15], 1));
 
 		this.spawnInitialEnemies();

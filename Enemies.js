@@ -4,12 +4,21 @@
  
 "use strict";
 
-var BatTileset = new Tileset(bat, [3, 2], [24, 16]);
-var RabbitTileset = new Tileset(rabbit, [3, 2], [24, 16]);
-var SlimeTileset0 = new Tileset(slime, [2, 2], [64, 64]);
-var SlimeTileset1 = new Tileset(SlimeTileset0[1][0], [2, 2], [32, 32]);
-var SlimeTileset2 = new Tileset(SlimeTileset1[1][0], [2, 2], [16, 16]);
-var ZombieTileset = new Tileset(zombie, [4, 2], [30, 60]);
+var BatTileset;
+var RabbitTileset;
+var SlimeTileset0;
+var SlimeTileset1;
+var SlimeTileset2;
+var ZombieTileset;
+
+function loadTileSets(){
+	BatTileset = new Tileset(bat, [3, 2], [24, 16]);
+	RabbitTileset = new Tileset(rabbit, [3, 2], [24, 16]);
+	SlimeTileset0 = new Tileset(slime, [2, 2], [64, 64]);
+	SlimeTileset1 = new Tileset(SlimeTileset0[1][0], [2, 2], [32, 32]);
+	SlimeTileset2 = new Tileset(SlimeTileset1[1][0], [2, 2], [16, 16]);
+	ZombieTileset = new Tileset(zombie, [4, 2], [30, 60]);
+}
 
 function Enemy(pos, size, health, speed){
 	Rect.call(this, pos, size);
