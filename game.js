@@ -29,6 +29,8 @@ var Game = {
 
 	player : null,
 
+	runFirstFrame : false,
+
 	gameObjects : [],
 
 	nSpawnsOnWorldSwitch : 20,
@@ -68,16 +70,18 @@ var Game = {
 
 		this.intro();
 
+		PhysicsManager.start(this);
+		AnimationThread.start();
+
+		ctx.font = "12px Verdana";
+	},
+
+	firstFrame : function(){
 		this.tileset = new Tileset(tileset, [8, 32], [16, 16], 1);
 
 		this.createWorlds();
 
 		this.switchToNormalWorld();
-
-		this.timeUntilSwitchWorld = this.timeBetweenSwitchWorld;
-
-		PhysicsManager.start(this);
-		AnimationThread.start();
 
 		loadTileSets();
 
@@ -85,8 +89,6 @@ var Game = {
 
 		this.spawnInitialEnemies();
 		this.timeUntilSpawnEnemy = this.timeBetweenSpawnEnemy;
-
-		ctx.font = "12px Verdana";
 	},
 	
 	update : function(){
@@ -97,6 +99,11 @@ var Game = {
 			}
 			
 			return;
+		}
+
+		if (! this.runFirstFrame){
+			this.firstFrame();
+			this.runFirstFrame = true;
 		}
 
 		this.currentWorld.topleft.x = this.worldOffset.x;
